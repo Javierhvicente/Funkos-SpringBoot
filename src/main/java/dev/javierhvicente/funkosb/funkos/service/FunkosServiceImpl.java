@@ -1,8 +1,15 @@
 package dev.javierhvicente.funkosb.funkos.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.javierhvicente.funkosb.funkos.exceptions.FunkosExceptions;
 import dev.javierhvicente.funkosb.funkos.models.Funko;
 import dev.javierhvicente.funkosb.funkos.repository.FunkoRepository;
+import dev.javierhvicente.funkosb.notifications.config.WebSocketConfig;
+import dev.javierhvicente.funkosb.notifications.config.WebSocketHandler;
+import dev.javierhvicente.funkosb.notifications.dto.FunkoNotificationDto;
+import dev.javierhvicente.funkosb.notifications.mapper.FunkoNotificationMapper;
+import dev.javierhvicente.funkosb.notifications.models.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +18,24 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 @CacheConfig(cacheNames = {"Funkos"})
 @Service
 public class FunkosServiceImpl implements FunkosService {
     private final Logger logger = LoggerFactory.getLogger(FunkosServiceImpl.class);
     private final FunkoRepository funkoRepository;
+    private final WebSocketConfig webSocketConfig;
+    private final ObjectMapper mapper;
+    private final FunkoNotificationMapper funkoNotificationMapper;
+    private WebSocketHandler websocketService;
     @Autowired
-    public FunkosServiceImpl(FunkoRepository funkoRepository) {
+    public FunkosServiceImpl(FunkoRepository funkoRepository, WebSocketConfig webSocketConfig, FunkoNotificationMapper funkoNotificationMapper) {
         this.funkoRepository = funkoRepository;
+        this.webSocketConfig = webSocketConfig;
+        mapper = new ObjectMapper();
+        this.funkoNotificationMapper = funkoNotificationMapper;
+        websocketService = webSocketConfig.webSocketFunkosHandler();
     }
 
     @Override
@@ -48,7 +64,9 @@ public class FunkosServiceImpl implements FunkosService {
     @CachePut(key = "#result.id")
     public Funko createFunko(Funko funko) {
         logger.info("Creando funko");
-        return funkoRepository.save(funko);
+        funkoRepository.save(funko);
+        onChange(Notification.Tipo.CREATE, funko);
+        return funko;
     }
 
     @Override
@@ -61,7 +79,9 @@ public class FunkosServiceImpl implements FunkosService {
         res.setCategoria(funko.getCategoria());
         res.setDescripcion(funko.getDescripcion());
         res.setImagen(funko.getImagen());
-        return funkoRepository.save(res);
+        funkoRepository.save(res);
+        onChange(Notification.Tipo.UPDATE, res);
+        return res;
     }
 
     @Override
@@ -70,6 +90,39 @@ public class FunkosServiceImpl implements FunkosService {
         logger.info("Borrando persona con id {}", id);
         Funko funko = funkoRepository.findById(id).orElseThrow(() -> new FunkosExceptions.FunkoNotFound(id));
         funkoRepository.deleteById(id);
+        onChange(Notification.Tipo.DELETE, funko);
         return funko;
+    }
+
+    void onChange(Notification.Tipo tipo, Funko data){
+        logger.info("Servicio de funkos onChange con tipo: " +  tipo + " y datos: " + data);
+        if(websocketService == null){
+            logger.warn("No se ha podido enviar la notificación a los clientes ws, no se ha encontrado el servicio");
+            websocketService = this.webSocketConfig.webSocketFunkosHandler();
+        }
+        try {
+            Notification<FunkoNotificationDto> notification = new Notification<>(
+                    "FUNKOS",
+                    tipo,
+                    funkoNotificationMapper.toFunkoNotificationDto(data),
+                    LocalDateTime.now().toString()
+            );
+            String json = mapper.writeValueAsString((notification));
+            logger.info("Enviando mensaje a los clientes ws");
+            Thread senderThread = new Thread(() ->{
+                try{
+                    websocketService.sendMessage(json);
+                }catch (Exception e){
+                    logger.error("Error al enviar el mensaje a través del servicio Websocket " , e);
+                }
+            });
+            senderThread.start();
+        }catch (JsonProcessingException e){
+            logger.error("Error al convertir la notificación a JSON", e);
+        }
+
+    }
+    public void setWebSocketService(WebSocketHandler webSocketHandlerMock) {
+        this.websocketService = webSocketHandlerMock;
     }
 }

@@ -1,4 +1,4 @@
-package dev.javierhvicente.funkosb.categoria;
+package dev.javierhvicente.funkosb.categoria.service;
 
 import dev.javierhvicente.funkosb.categoria.exceptions.CategoriaException;
 import dev.javierhvicente.funkosb.categoria.models.Categoria;

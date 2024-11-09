@@ -33,7 +33,8 @@ dependencies {
     //JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     //H2
-    implementation("com.h2database:h2") // base de datos a usar, puede ser otra
+    implementation("com.h2database:h2")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

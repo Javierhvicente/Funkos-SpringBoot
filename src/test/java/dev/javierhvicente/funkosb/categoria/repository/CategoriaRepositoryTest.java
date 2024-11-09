@@ -1,4 +1,4 @@
-package dev.javierhvicente.funkosb.categoria;
+package dev.javierhvicente.funkosb.categoria.repository;
 
 import dev.javierhvicente.funkosb.categoria.models.Categoria;
 import dev.javierhvicente.funkosb.categoria.repository.CategoriasRepository;
