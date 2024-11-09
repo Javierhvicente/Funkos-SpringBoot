@@ -2,6 +2,7 @@ package dev.javierhvicente.funkosb.funkos.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.javierhvicente.funkosb.categoria.models.Categoria;
 import dev.javierhvicente.funkosb.funkos.exceptions.FunkosExceptions;
 import dev.javierhvicente.funkosb.funkos.models.Funko;
 import dev.javierhvicente.funkosb.funkos.repository.FunkoRepository;
@@ -10,16 +11,21 @@ import dev.javierhvicente.funkosb.notifications.config.WebSocketHandler;
 import dev.javierhvicente.funkosb.notifications.dto.FunkoNotificationDto;
 import dev.javierhvicente.funkosb.notifications.mapper.FunkoNotificationMapper;
 import dev.javierhvicente.funkosb.notifications.models.Notification;
+import jakarta.persistence.criteria.Join;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
+
 @CacheConfig(cacheNames = {"Funkos"})
 @Service
 public class FunkosServiceImpl implements FunkosService {
@@ -39,9 +45,30 @@ public class FunkosServiceImpl implements FunkosService {
     }
 
     @Override
-    public List<Funko> getAllFunkos() {
-        logger.info("Obteniendo funkos");
-        return funkoRepository.findAll();
+    public Page<Funko> getAllFunkos(Optional<String> categoria, Optional<String> name, Optional<String> description, Optional<Double> minPrice, Optional<Double> maxPrice, Optional<Boolean> isEnabled, Pageable pageable) {
+        Specification<Funko> specCategoriaFunko =((root, query, criteriaBuilder) ->
+                categoria.map(c -> {
+                    Join<Funko, Categoria> categoriaJoin = root.join("categoria");
+                    return criteriaBuilder.like(criteriaBuilder.lower(categoriaJoin.get("name")), "%" + c + "%");
+                }).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+        Specification<Funko> specNameFunko =((root, query, criteriaBuilder) ->
+                name.map(n -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + n + "%")).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+        Specification<Funko> specDescriptionFunko =((root, query, criteriaBuilder) ->
+                description.map(d -> criteriaBuilder.like(criteriaBuilder.lower(root.get("descripcion")), "%" + d + "%")).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+        Specification<Funko> specMinPriceFunko =((root, query, criteriaBuilder) ->
+                minPrice.map(p -> criteriaBuilder.greaterThanOrEqualTo(root.get("price"), p)).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+        Specification<Funko> specMaxPriceFunko =((root, query, criteriaBuilder) ->
+                maxPrice.map(p -> criteriaBuilder.lessThanOrEqualTo(root.get("price"), p)).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+        Specification<Funko> specIsEnabledFunko =((root, query, criteriaBuilder) ->
+                isEnabled.map(e -> criteriaBuilder.equal(root.get("isEnabled"), e)).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+
+        Specification<Funko> criterio = Specification.where(specCategoriaFunko)
+                .and(specNameFunko)
+                .and(specDescriptionFunko)
+                .and(specMinPriceFunko)
+                .and(specMaxPriceFunko)
+                .and(specIsEnabledFunko);
+        return funkoRepository.findAll(criterio, pageable);
     }
 
     @Override
