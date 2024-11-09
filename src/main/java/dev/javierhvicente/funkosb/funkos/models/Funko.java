@@ -47,4 +47,7 @@ public class Funko {
 
     @LastModifiedDate
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(nullable = false)
+    private Boolean enabled = true;
 }

@@ -16,7 +16,7 @@ public class FunkoMapperTest {
     }
     @Test
     void fromFunkoDtoShouldMapCorrectly() {
-        FunkoDto dto = new FunkoDto("Funko test", "TEST", "SoyTest", "soy.png", 19.99);
+        FunkoDto dto = new FunkoDto("Funko test", "TEST", "SoyTest", "soy.png", 19.99, true);
         Funko funko = mapper.fromFunkoDto(dto);
 
         assertNotNull(funko);

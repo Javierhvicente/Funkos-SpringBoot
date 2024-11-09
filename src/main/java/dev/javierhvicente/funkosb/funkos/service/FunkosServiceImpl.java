@@ -116,7 +116,8 @@ public class FunkosServiceImpl implements FunkosService {
     public Funko deleteFunko(Long id) {
         logger.info("Borrando persona con id {}", id);
         Funko funko = funkoRepository.findById(id).orElseThrow(() -> new FunkosExceptions.FunkoNotFound(id));
-        funkoRepository.deleteById(id);
+        funko.setEnabled(false);
+        funkoRepository.save(funko);
         onChange(Notification.Tipo.DELETE, funko);
         return funko;
     }

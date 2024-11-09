@@ -19,6 +19,7 @@ public class FunkosMapper {
         funko.setImagen(dto.imagen());
         Descripcion descripcion = new Descripcion(dto.description());
         funko.setDescripcion(descripcion);
+        funko.setEnabled(dto.enabled());
         return funko;
     }
 
