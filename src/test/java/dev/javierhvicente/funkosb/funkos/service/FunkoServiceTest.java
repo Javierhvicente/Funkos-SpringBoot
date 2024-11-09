@@ -6,6 +6,9 @@ import dev.javierhvicente.funkosb.funkos.models.Descripcion;
 import dev.javierhvicente.funkosb.funkos.models.Funko;
 import dev.javierhvicente.funkosb.funkos.repository.FunkoRepository;
 import dev.javierhvicente.funkosb.funkos.service.FunkosServiceImpl;
+import dev.javierhvicente.funkosb.notifications.config.WebSocketConfig;
+import dev.javierhvicente.funkosb.notifications.config.WebSocketHandler;
+import dev.javierhvicente.funkosb.notifications.mapper.FunkoNotificationMapper;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +30,11 @@ public class FunkoServiceTest {
     private final Descripcion descripcion = new Descripcion("SoyTest");
     private final Categoria categoria = new Categoria(null, "TEST", null, LocalDateTime.now(), LocalDateTime.now(), true);
     private final Funko funko = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 19.99 , LocalDateTime.now(), LocalDateTime.now());
-
+    WebSocketHandler webSocketHandlerMock = mock(WebSocketHandler.class);
+    @Mock
+    private WebSocketConfig webSocketConfig;
+    @Mock
+    private FunkoNotificationMapper mapper;
     @Mock
     private FunkoRepository repository;
    @InjectMocks
@@ -59,7 +67,7 @@ public class FunkoServiceTest {
     void getFunkoByIdNotFound() {
        var id = 99999L;
        when(repository.findById(id)).thenThrow(new FunkosExceptions.FunkoNotFound(id));
-       var res = assertThrows(FunkosExceptions.FunkoNotFoundByName.class, () -> funkosService.getFunkoById(id));
+       var res = assertThrows(FunkosExceptions.FunkoNotFound.class, () -> funkosService.getFunkoById(id));
        verify(repository, times(1)).findById(id);
     }
 
@@ -84,8 +92,9 @@ public class FunkoServiceTest {
     }
 
     @Test
-    void createFunko() {
+    void createFunko() throws IOException {
        when(repository.save(funko)).thenReturn(funko);
+       doNothing().when(webSocketHandlerMock).sendMessage(any());
        Funko res = funkosService.createFunko(funko);
        assertAll(
                () -> assertNotNull(res),
@@ -138,11 +147,12 @@ public class FunkoServiceTest {
    }
 
    @Test
-    void updateFunko() {
+    void updateFunko() throws IOException {
        Funko funkoNew = new Funko(null, "Funko Update", descripcion, categoria,"soy.png", 19.99 , LocalDateTime.now(), LocalDateTime.now());
        
        when(repository.findById(funko.getId())).thenReturn(java.util.Optional.of(funko));
        when(repository.save(any(Funko.class))).thenReturn(funkoNew);
+       doNothing().when(webSocketHandlerMock).sendMessage(any());
 
        Funko res = funkosService.updateFunko(funko.getId(), funkoNew);
 
@@ -165,9 +175,10 @@ public class FunkoServiceTest {
    }
 
    @Test
-    void deleteFunko() {
+    void deleteFunko() throws IOException {
        when(repository.findById(funko.getId())).thenReturn(java.util.Optional.of(funko));
        doNothing().when(repository).deleteById(funko.getId());
+       doNothing().when(webSocketHandlerMock).sendMessage(any());
 
        var res = funkosService.deleteFunko(funko.getId());
 
