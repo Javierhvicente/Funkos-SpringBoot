@@ -33,6 +33,8 @@ dependencies {
     //JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     //H2
     implementation("com.h2database:h2")
@@ -54,4 +56,16 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
 }

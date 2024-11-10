@@ -18,6 +18,7 @@ public class FunkosMapper {
         Descripcion descripcion = new Descripcion(dto.descripcion());
         funko.setDescripcion(descripcion);
         funko.setEnabled(dto.enabled());
+        funko.setStock(dto.stock());
         return funko;
     }
 

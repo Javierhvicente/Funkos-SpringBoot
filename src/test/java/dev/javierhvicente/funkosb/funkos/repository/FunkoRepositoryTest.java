@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FunkoRepositoryTest {
     private final Descripcion descripcion = new Descripcion("SoyTest");
     private final Categoria categoria = new Categoria(null, "TEST", null, LocalDateTime.now(), LocalDateTime.now(), true);
-    private final Funko funko = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 19.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+    private final Funko funko = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 19.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
 
     @Autowired
     private FunkoRepository repository;

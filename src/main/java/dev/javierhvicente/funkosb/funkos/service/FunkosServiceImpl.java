@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -72,6 +73,7 @@ public class FunkosServiceImpl implements FunkosService {
     }
 
     @Override
+    @Cacheable
     public Funko getFunkoById(Long id) {
         logger.info("Obteniendo funko por id {}", id);
         return funkoRepository.findById(id).orElseThrow(() -> new FunkosExceptions.FunkoNotFound(id));
@@ -106,6 +108,7 @@ public class FunkosServiceImpl implements FunkosService {
         res.setCategoria(funko.getCategoria());
         res.setDescripcion(funko.getDescripcion());
         res.setImagen(funko.getImagen());
+        res.setStock(funko.getStock());
         funkoRepository.save(res);
         onChange(Notification.Tipo.UPDATE, res);
         return res;

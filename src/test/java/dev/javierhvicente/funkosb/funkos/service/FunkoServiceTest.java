@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 public class FunkoServiceTest {
     private final Descripcion descripcion = new Descripcion("SoyTest");
     private final Categoria categoria = new Categoria(null, "TEST", null, LocalDateTime.now(), LocalDateTime.now(), true);
-    private final Funko funko = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 19.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+    private final Funko funko = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 19.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
     WebSocketHandler webSocketHandlerMock = mock(WebSocketHandler.class);
     @Mock
     private WebSocketConfig webSocketConfig;
@@ -472,7 +472,7 @@ public class FunkoServiceTest {
 
    @Test
     void createFunkoErrorPrecioPorDebajoLimite(){
-        Funko funkoMal = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 1.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+        Funko funkoMal = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 1.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
         when(repository.save(funkoMal)).thenThrow( ConstraintViolationException.class);
         var res = assertThrows(ConstraintViolationException.class, () -> funkosService.createFunko(funkoMal));
         verify(repository, times(1)).save(funkoMal);
@@ -480,7 +480,7 @@ public class FunkoServiceTest {
 
    @Test
     void createFunkoErrorPrecioEncimaPrecioLimite(){
-        Funko funkoMal = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 100.0 , LocalDateTime.now(), LocalDateTime.now(), true);
+        Funko funkoMal = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 100.0 , 10,LocalDateTime.now(), LocalDateTime.now(), true);
         when(repository.save(funkoMal)).thenThrow(ConstraintViolationException.class);
         var res = assertThrows(ConstraintViolationException.class, () -> funkosService.createFunko(funkoMal));
         verify(repository, times(1)).save(funkoMal);
@@ -488,7 +488,7 @@ public class FunkoServiceTest {
 
    @Test
     void createFunkoLimitePrecioMenor(){
-       Funko funkoLimite = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 10.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+       Funko funkoLimite = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 10.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
        when(repository.save(funkoLimite)).thenReturn(funkoLimite);
        Funko res = funkosService.createFunko(funkoLimite);
        assertAll(
@@ -501,7 +501,7 @@ public class FunkoServiceTest {
 
    @Test
     void createFunkoLimitePrecioMayor(){
-       Funko funkoLimite = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 59.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+       Funko funkoLimite = new Funko(null, "Funko Test", descripcion, categoria,"soy.png", 59.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
        when(repository.save(funkoLimite)).thenReturn(funkoLimite);
        Funko res = funkosService.createFunko(funkoLimite);
        assertAll(
@@ -514,7 +514,7 @@ public class FunkoServiceTest {
 
    @Test
     void updateFunko() throws IOException {
-       Funko funkoNew = new Funko(null, "Funko Update", descripcion, categoria,"soy.png", 19.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+       Funko funkoNew = new Funko(null, "Funko Update", descripcion, categoria,"soy.png", 19.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
        
        when(repository.findById(funko.getId())).thenReturn(java.util.Optional.of(funko));
        when(repository.save(any(Funko.class))).thenReturn(funkoNew);
@@ -533,7 +533,7 @@ public class FunkoServiceTest {
 
    @Test
     void updateFunkoNotFound(){
-       Funko funkoNew = new Funko(null, "Funko Update", descripcion, categoria,"soy.png", 19.99 , LocalDateTime.now(), LocalDateTime.now(), true);
+       Funko funkoNew = new Funko(null, "Funko Update", descripcion, categoria,"soy.png", 19.99 ,10, LocalDateTime.now(), LocalDateTime.now(), true);
        when(repository.findById(funko.getId())).thenThrow(new FunkosExceptions.FunkoNotFound(funko.getId()));
        var res = assertThrows(FunkosExceptions.FunkoNotFound.class, () -> funkosService.updateFunko(funko.getId(), funko));
        verify(repository, times(1)).findById(funko.getId());
