@@ -5,6 +5,7 @@ import dev.javierhvicente.funkosb.categoria.mapper.CategoriaMapper;
 import dev.javierhvicente.funkosb.categoria.models.Categoria;
 import dev.javierhvicente.funkosb.categoria.service.CategoriasService;
 import dev.javierhvicente.funkosb.utils.PageResponse;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +63,14 @@ public class CategoriasController {
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> create(@RequestBody CategoriaDto categoriaDto){
+    public ResponseEntity<Categoria> create(@Valid @RequestBody CategoriaDto categoriaDto){
         logger.info("Creando categoria");
         var result = categoriasService.create(categoriaMapper.fromCategoriaDto(categoriaDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Categoria> update(@PathVariable Long id, @RequestBody CategoriaDto categoriaDto){
+    public ResponseEntity<Categoria> update(@PathVariable Long id, @Valid @RequestBody CategoriaDto categoriaDto){
         logger.info("Actualizando categoria por id {}", id);
         var result = categoriasService.update(id, categoriaMapper.fromCategoriaDto(categoriaDto));
         return ResponseEntity.ok(result);
