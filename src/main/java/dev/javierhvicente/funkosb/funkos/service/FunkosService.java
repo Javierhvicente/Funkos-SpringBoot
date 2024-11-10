@@ -14,4 +14,5 @@ public interface FunkosService {
     Funko createFunko(Funko funko);
     Funko updateFunko(Long id, Funko funko);
     Funko deleteFunko(Long id);
+
 }

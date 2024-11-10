@@ -9,6 +9,7 @@ import dev.javierhvicente.funkosb.funkos.service.FunkosServiceImpl;
 import dev.javierhvicente.funkosb.notifications.config.WebSocketConfig;
 import dev.javierhvicente.funkosb.notifications.config.WebSocketHandler;
 import dev.javierhvicente.funkosb.notifications.mapper.FunkoNotificationMapper;
+import dev.javierhvicente.funkosb.notifications.models.Notification;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -551,6 +552,7 @@ public class FunkoServiceTest {
                () -> assertFalse(res.getEnabled())
        );
        verify(repository, times(1)).findById(funko.getId());
+       verify(repository, times(1)).save(any(Funko.class));
    }
 
    @Test

@@ -18,7 +18,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,17 +34,17 @@ public class CategoriasController {
     }
     @GetMapping
     public ResponseEntity<PageResponse<Categoria>>getAll(
-            @RequestParam(required = false) Optional<String> nombre,
-            @RequestParam(required = false) Optional<Boolean> isDeleted,
+            @RequestParam(required = false) Optional<String> tipo,
+            @RequestParam(required = false) Optional<Boolean> isEnabled,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ){
-       logger.info("Obteniendo todas las categorias con nombre: {} y borrados: {}", nombre, isDeleted);
+       logger.info("Obteniendo todas las categorias con nombre: {} y borrados: {}", tipo, isEnabled);
        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
        var pageable = PageRequest.of(page, size, sort);
-       return ResponseEntity.ok(PageResponse.of(categoriasService.getAllCategorias(nombre, isDeleted, pageable), sortBy, direction));
+       return ResponseEntity.ok(PageResponse.of(categoriasService.getAllCategorias(tipo, isEnabled, pageable), sortBy, direction));
     }
 
     @GetMapping("{id}")

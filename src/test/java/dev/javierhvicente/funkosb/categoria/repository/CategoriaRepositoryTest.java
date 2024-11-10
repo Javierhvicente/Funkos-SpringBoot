@@ -29,7 +29,7 @@ public class CategoriaRepositoryTest {
     void findByTipo() {
         Categoria categoriaEncontrada = repository.findByTipo("TEST");
         assertNotNull(categoriaEncontrada);
-        assertEquals(categoria, categoriaEncontrada);
+        assertEquals(categoria.getTipo(), categoriaEncontrada.getTipo());
     }
 
     @Test

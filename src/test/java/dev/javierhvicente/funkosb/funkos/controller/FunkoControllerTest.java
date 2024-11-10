@@ -10,6 +10,7 @@ import dev.javierhvicente.funkosb.funkos.mapper.FunkosMapper;
 import dev.javierhvicente.funkosb.funkos.models.Descripcion;
 import dev.javierhvicente.funkosb.funkos.models.Funko;
 import dev.javierhvicente.funkosb.funkos.service.FunkosService;
+import dev.javierhvicente.funkosb.notifications.models.Notification;
 import dev.javierhvicente.funkosb.utils.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -422,7 +423,7 @@ public class FunkoControllerTest {
         Optional<Double> maxPrice = Optional.of(59.99);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new  PageImpl<>(listaFunkos);
-        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), descripccion, Optional.empty() , maxPrice, Optional.empty(), pageable)).thenReturn(page);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), descripccion, maxPrice , Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
@@ -439,7 +440,7 @@ public class FunkoControllerTest {
         );
 
         // Verify
-        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), descripccion, Optional.empty() , maxPrice, Optional.empty(), pageable);
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), descripccion, maxPrice , Optional.empty(), Optional.empty(), pageable);
     }
     @Test
     void getAllFunkosByDescripccionAndEnabled() throws Exception {

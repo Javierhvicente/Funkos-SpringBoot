@@ -83,12 +83,13 @@ public class CategoriaControllerTest {
     @Test
     void getAllCategoriasByTipo() throws Exception {
         var listaCategorias = List.of(categoria);
+        var localEndPoint = myEndpoint + "?tipo=TEST";
         Optional<String> tipo = Optional.of("TEST");
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(listaCategorias);
         when(categoriasService.getAllCategorias(tipo, Optional.empty(), pageable)).thenReturn(page);
         MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
+                        get(localEndPoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         PageResponse<Categoria> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
@@ -97,17 +98,18 @@ public class CategoriaControllerTest {
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(1, res.content().size())
         );
-        verify(categoriasService, times(1)).getAllCategorias(Optional.empty(), Optional.empty(), pageable);
+        verify(categoriasService, times(1)).getAllCategorias(tipo, Optional.empty(), pageable);
     }
     @Test
     void getAllCategoriasByEnabled() throws Exception {
         var listaCategorias = List.of(categoria);
+        var localEndPoint = myEndpoint + "?isEnabled=true";
         Optional<Boolean> enabled = Optional.of(true);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(listaCategorias);
         when(categoriasService.getAllCategorias(Optional.empty(), enabled, pageable)).thenReturn(page);
         MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
+                        get(localEndPoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         PageResponse<Categoria> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
@@ -116,18 +118,19 @@ public class CategoriaControllerTest {
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(1, res.content().size())
         );
-        verify(categoriasService, times(1)).getAllCategorias(Optional.empty(), Optional.empty(), pageable);
+        verify(categoriasService, times(1)).getAllCategorias(Optional.empty(), enabled, pageable);
     }
     @Test
     void getAllCategoriasByEnabledAndTipo() throws Exception {
         var listaCategorias = List.of(categoria);
+        var localEndPoint = myEndpoint + "?tipo=TEST&isEnabled=true";
         Optional<String> tipo = Optional.of("TEST");
         Optional<Boolean> enabled = Optional.of(true);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(listaCategorias);
         when(categoriasService.getAllCategorias(tipo, enabled, pageable)).thenReturn(page);
         MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
+                        get(localEndPoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         PageResponse<Categoria> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
@@ -136,7 +139,7 @@ public class CategoriaControllerTest {
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(1, res.content().size())
         );
-        verify(categoriasService, times(1)).getAllCategorias(Optional.empty(), Optional.empty(), pageable);
+        verify(categoriasService, times(1)).getAllCategorias(tipo, enabled, pageable);
     }
 
     @Test
