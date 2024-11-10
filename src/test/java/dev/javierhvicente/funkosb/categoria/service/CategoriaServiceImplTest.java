@@ -8,10 +8,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,15 +29,64 @@ public class CategoriaServiceImplTest {
     private CategoriasServiceImpl categoriaService;
 
     @Test
-    void getCategorias(){
+    void getCategorias_withoutParams(){
         List<Categoria> categorias = Arrays.asList(categoria);
-        when(categoriaRepository.findAll()).thenReturn(categorias);
-        var result = categoriaService.getAllCategorias();
-        assertAll("getCategorias",
-                () -> assertNotNull(result),
-                () -> assertFalse(result.isEmpty())
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Categoria> expectedPage = new PageImpl<>(categorias);
+        when(categoriaRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
+        Page<Categoria> actualPage = categoriaService.getAllCategorias(Optional.empty(), Optional.empty(), pageable);
+        assertAll("getAllCategorias",
+                () -> assertNotNull(actualPage),
+                () -> assertFalse(actualPage.isEmpty()),
+                () -> assertEquals(expectedPage, actualPage)
         );
-        verify(categoriaRepository,times(1) ).findAll();
+        verify(categoriaRepository,times(1) ).findAll(any(Specification.class), any(Pageable.class));
+    }
+    @Test
+    void getCategorias_withTipoProvided(){
+        Optional<String> tipo = Optional.of("TEST");
+        List<Categoria> expectedCategorias = Arrays.asList(categoria);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Categoria> expectedPage = new PageImpl<>(expectedCategorias);
+        when(categoriaRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
+        Page<Categoria> actualPage = categoriaService.getAllCategorias(tipo, Optional.empty(), pageable);
+        assertAll("getAllCategorias",
+                () -> assertNotNull(actualPage),
+                () -> assertFalse(actualPage.isEmpty()),
+                () -> assertEquals(expectedPage, actualPage)
+        );
+        verify(categoriaRepository,times(1) ).findAll(any(Specification.class), any(Pageable.class));
+    }
+    @Test
+    void getCategorias_withEnabledProvided(){
+        Optional<Boolean> enabled = Optional.of(true);
+        List<Categoria> expectedCategorias = Arrays.asList(categoria);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Categoria> expectedPage = new PageImpl<>(expectedCategorias);
+        when(categoriaRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
+        Page<Categoria> actualPage = categoriaService.getAllCategorias( Optional.empty(), enabled, pageable);
+        assertAll("getAllCategorias",
+                () -> assertNotNull(actualPage),
+                () -> assertFalse(actualPage.isEmpty()),
+                () -> assertEquals(expectedPage, actualPage)
+        );
+        verify(categoriaRepository,times(1) ).findAll(any(Specification.class), any(Pageable.class));
+    }
+    @Test
+    void getCategorias_withAllParamsProvided(){
+        Optional<String> tipo = Optional.of("TEST");
+        Optional<Boolean> enabled = Optional.of(true);
+        List<Categoria> expectedCategorias = Arrays.asList(categoria);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Categoria> expectedPage = new PageImpl<>(expectedCategorias);
+        when(categoriaRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
+        Page<Categoria> actualPage = categoriaService.getAllCategorias(tipo, enabled, pageable);
+        assertAll("getAllCategorias",
+                () -> assertNotNull(actualPage),
+                () -> assertFalse(actualPage.isEmpty()),
+                () -> assertEquals(expectedPage, actualPage)
+        );
+        verify(categoriaRepository,times(1) ).findAll(any(Specification.class), any(Pageable.class));
     }
     @Test
     void getCategoriaById(){
