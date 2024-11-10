@@ -4,8 +4,6 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.enabled;
-
 
 public record  FunkoDto(
     @NotBlank(message = "El nombre no puede estar vacío")
@@ -14,7 +12,7 @@ public record  FunkoDto(
     @NotBlank(message = "El categoria no puede estar vacio")
     String categoria,
     @NotBlank(message = "La descripcion no puede estar vacia")
-    String description,
+    String descripcion,
     String imagen,
     @DecimalMin(value ="10.99", message = "El precio no puede ser menor a 10.99")
     @DecimalMax(value ="59.99", message = "El precio no puede ser mayor a 59.99")

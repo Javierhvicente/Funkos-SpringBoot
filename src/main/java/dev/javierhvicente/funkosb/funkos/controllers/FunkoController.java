@@ -7,8 +7,6 @@ import dev.javierhvicente.funkosb.funkos.service.FunkosService;
 import dev.javierhvicente.funkosb.utils.PageResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,7 +36,7 @@ public class FunkoController {
     public ResponseEntity<PageResponse<Funko>> getAll(
             @RequestParam(required = false) Optional<String> categoria,
             @RequestParam(required = false) Optional<String> name,
-            @RequestParam(required = false) Optional<String> description,
+            @RequestParam(required = false) Optional<String> descripcion,
             @RequestParam(required = false) Optional<Double> minPrice,
             @RequestParam(required = false) Optional<Double> maxPrice,
             @RequestParam(required = false) Optional<Boolean> isEnabled,
@@ -48,10 +46,10 @@ public class FunkoController {
             @RequestParam(defaultValue = "asc") String direction
 
             ){
-        log.info("Obteniendo funkos con las siguientes condiciones: " + categoria + " " + name + " " + description + " " + minPrice + " " + maxPrice + " " + isEnabled );
+        log.info("Obteniendo funkos con las siguientes condiciones: " + categoria + " " + name + " " + descripcion + " " + minPrice + " " + maxPrice + " " + isEnabled );
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         var pageable = PageRequest.of(page, size, sort);
-        return ResponseEntity.ok(PageResponse.of(funkosService.getAllFunkos(categoria, name, description, minPrice, maxPrice, isEnabled, pageable), sortBy, direction));
+        return ResponseEntity.ok(PageResponse.of(funkosService.getAllFunkos(categoria, name, descripcion, minPrice, maxPrice, isEnabled, pageable), sortBy, direction));
     }
 
     @GetMapping("{id}")

@@ -11,10 +11,8 @@ import dev.javierhvicente.funkosb.funkos.models.Descripcion;
 import dev.javierhvicente.funkosb.funkos.models.Funko;
 import dev.javierhvicente.funkosb.funkos.service.FunkosService;
 import dev.javierhvicente.funkosb.utils.PageResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -29,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -38,7 +35,6 @@ import static org.springframework.data.domain.Sort.by;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -95,6 +91,31 @@ public class FunkoControllerTest {
         // Verify
         verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
+    @Test
+    void getAllFunkosAllParamsProvided() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST&name=FunkoTest&descripcion=soyTest&minPrice=10.99&maxPrice=59.99&isEnabled=true";
+        Optional<String> categoria = Optional.of("TEST");
+        Optional<String> name = Optional.of("FunkoTest");
+        Optional<String> descripcion = Optional.of("soyTest");
+        Optional<Double> minPrice = Optional.of(10.99);
+        Optional<Double> maxPrice = Optional.of(59.99);
+        Optional<Boolean> enabled = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, name, descripcion, minPrice, maxPrice, enabled, pageable)).thenReturn(page);
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+        verify(funkosService, times(1)).getAllFunkos(categoria, name, descripcion, minPrice, maxPrice, enabled, pageable);
+    }
 
     @Test
     void getAllFunkosByCategoria() throws Exception {
@@ -107,7 +128,7 @@ public class FunkoControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
+                        get(localEndPoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
@@ -134,7 +155,7 @@ public class FunkoControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        get(myEndpoint)
+                        get(localEndPoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
@@ -147,8 +168,389 @@ public class FunkoControllerTest {
         );
 
         // Verify
-        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+        verify(funkosService, times(1)).getAllFunkos(categoria, name, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
+    @Test
+    void getAllFunkosByCategoriaAndDescripccion() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST&descripcion=FunkoTest";
+        Optional<String> categoria = Optional.of("TEST");
+        Optional<String> descripcion = Optional.of("FunkoTest");
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, Optional.empty(), descripcion, Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), descripcion, Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByCategoriaAndMinPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST&minPrice=10.99";
+        Optional<String> categoria = Optional.of("TEST");
+        Optional<Double> minPrice = Optional.of(10.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, Optional.empty(), Optional.empty(), minPrice, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), Optional.empty(), minPrice, Optional.empty(), Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByCategoriaAndMaxPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST&maxPrice=59.99";
+        Optional<String> categoria = Optional.of("TEST");
+        Optional<Double> maxPrice = Optional.of(59.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), maxPrice,Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), maxPrice,Optional.empty(), pageable);
+    }
+
+    @Test
+    void getAllFunkosByCategoriaAndEnabled() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST&isEnabled=true";
+        Optional<String> categoria = Optional.of("TEST");
+        Optional<Boolean> enabled = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), enabled, pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), enabled, pageable);
+    }
+    @Test
+    void getAllFunkosByNameAndDescripcion() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?name=Funko&descripcion=soyTest";
+        Optional<String> name = Optional.of("Funko");
+        Optional<String> descripcion = Optional.of("soyTest");
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), name, descripcion, Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), name, descripcion, Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByNameAndMinPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?name=Funko&minPrice=10.99";
+        Optional<String> name = Optional.of("Funko");
+        Optional<Double> minPrice = Optional.of(10.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), name, Optional.empty(), minPrice,Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), name, Optional.empty(), minPrice,Optional.empty(), Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByNameAndMaxPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?name=Funko&maxPrice=59.99";
+        Optional<String> name = Optional.of("Funko");
+        Optional<Double> maxPrice = Optional.of(59.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), name, Optional.empty(), Optional.empty(), maxPrice, Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), name, Optional.empty(), Optional.empty(), maxPrice, Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByNameAndEnabled() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?name=Funko&isEnabled=true";
+        Optional<String> name = Optional.of("Funko");
+        Optional<Boolean> enabled = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), name, Optional.empty(), Optional.empty(), Optional.empty(), enabled, pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), name, Optional.empty(), Optional.empty(), Optional.empty(), enabled, pageable);
+    }
+    @Test
+    void getAllFunkosByDescripccionAndMinPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?descripcion=soyTest&minPrice=10.99";
+        Optional<String> descripccion = Optional.of("soyTest");
+        Optional<Double> minPrice = Optional.of(10.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), descripccion,  minPrice, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), descripccion,  minPrice, Optional.empty(), Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByDescripccionAndMaxPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?descripcion=soyTest&minPrice=59.99";
+        Optional<String> descripccion = Optional.of("soyTest");
+        Optional<Double> maxPrice = Optional.of(59.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), descripccion, Optional.empty() , maxPrice, Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), descripccion, Optional.empty() , maxPrice, Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByDescripccionAndEnabled() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?descripcion=soyTest&isEnabled=true";
+        Optional<String> descripccion = Optional.of("soyTest");
+        Optional<Boolean> enabled = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), descripccion, Optional.empty() , Optional.empty(), enabled, pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), descripccion, Optional.empty() , Optional.empty(), enabled, pageable);
+    }
+    @Test
+    void getAllFunkosByMinAndMaxPrice() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?minPrice=10.99&maxPrice=59.99";
+        Optional<Double> minPrice = Optional.of(10.99);
+        Optional<Double> maxPrice = Optional.of(59.99);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), minPrice , maxPrice, Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), minPrice , maxPrice, Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByMinAndEnable() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?minPrice=10.99&isEnabled=true";
+        Optional<Double> minPrice = Optional.of(10.99);
+        Optional<Boolean> enable = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), minPrice , Optional.empty(), enable, pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), minPrice , Optional.empty(), enable, pageable);
+    }
+    @Test
+    void getAllFunkosByMaxPriceAndEnable() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?maxPrice=59.99&isEnabled=true";
+        Optional<Double> maxPrice = Optional.of(59.99);
+        Optional<Boolean> enable = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty() , maxPrice, enable, pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty() , maxPrice, enable, pageable);
+    }
+
+
 
     @Test
     void getFunkoById() throws Exception {
