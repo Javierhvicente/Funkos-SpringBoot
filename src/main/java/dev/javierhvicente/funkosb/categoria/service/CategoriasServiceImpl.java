@@ -8,9 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @CacheConfig(cacheNames = {"Categorias"})
 public class CategoriasServiceImpl implements CategoriasService {
@@ -22,9 +27,16 @@ public class CategoriasServiceImpl implements CategoriasService {
     }
 
     @Override
-    public List<Categoria> getCategorias() {
+    public Page<Categoria> getAllCategorias(Optional<String> tipo, Optional<Boolean> isEnabled, Pageable pageable) {
         logger.info("Getting categorías");
-        return categoriasRepository.findAll();
+        Specification<Categoria> specTipoCategoria = (root, query, criteriaBuilder) ->
+                tipo.map(m -> criteriaBuilder.like(criteriaBuilder.lower(root.get("tipo")), "%" + m + "%"))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+        Specification<Categoria> specIsEnabled = (root, query, criteriaBuilder) ->
+                isEnabled.map(m -> criteriaBuilder.equal(root.get("enabled"), m))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+        Specification<Categoria> criterio = Specification.where(specTipoCategoria).and(specIsEnabled);
+        return categoriasRepository.findAll(criterio, pageable);
     }
 
     @Override

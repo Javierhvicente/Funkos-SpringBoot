@@ -3,13 +3,11 @@ package dev.javierhvicente.funkosb.categoria.service;
 import dev.javierhvicente.funkosb.categoria.exceptions.CategoriaException;
 import dev.javierhvicente.funkosb.categoria.models.Categoria;
 import dev.javierhvicente.funkosb.categoria.repository.CategoriasRepository;
-import dev.javierhvicente.funkosb.categoria.service.CategoriasServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -31,7 +29,7 @@ public class CategoriaServiceImplTest {
     void getCategorias(){
         List<Categoria> categorias = Arrays.asList(categoria);
         when(categoriaRepository.findAll()).thenReturn(categorias);
-        var result = categoriaService.getCategorias();
+        var result = categoriaService.getAllCategorias();
         assertAll("getCategorias",
                 () -> assertNotNull(result),
                 () -> assertFalse(result.isEmpty())

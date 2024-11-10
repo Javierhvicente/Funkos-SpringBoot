@@ -1,5 +1,6 @@
 package dev.javierhvicente.funkosb.funkos.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.javierhvicente.funkosb.categoria.models.Categoria;
@@ -9,6 +10,7 @@ import dev.javierhvicente.funkosb.funkos.mapper.FunkosMapper;
 import dev.javierhvicente.funkosb.funkos.models.Descripcion;
 import dev.javierhvicente.funkosb.funkos.models.Funko;
 import dev.javierhvicente.funkosb.funkos.service.FunkosService;
+import dev.javierhvicente.funkosb.utils.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,12 +34,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.springframework.data.domain.Sort.by;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -63,31 +70,86 @@ public class FunkoControllerTest {
         mapper.registerModule(new JavaTimeModule());
 
     }
-    /*
+
     @Test
     void getAllFunkos() throws Exception {
-        // Arrange
-        when(funkosService.getAllFunkos()).thenReturn(List.of(funko));
+        var listaFunkos = List.of(funko);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
                         get(myEndpoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-
-        List<Funko> res = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Funko.class));
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         // Assert
-        assertAll(
-                () -> assertEquals(200, response.getStatus())
-
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
         );
 
         // Verify
-        verify(funkosService, times(1)).getAllFunkos();
+        verify(funkosService, times(1)).getAllFunkos(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
-    */
+
+    @Test
+    void getAllFunkosByCategoria() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST";
+        Optional<String> categoria = Optional.of("TEST");
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(myEndpoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+    }
+    @Test
+    void getAllFunkosByCategoriaAndName() throws Exception {
+        var listaFunkos = List.of(funko);
+        var localEndPoint = myEndpoint + "?categoria=TEST&name=FunkoTest";
+        Optional<String> categoria = Optional.of("TEST");
+        Optional<String> name = Optional.of("FunkoTest");
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new  PageImpl<>(listaFunkos);
+        when(funkosService.getAllFunkos(categoria, name, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(myEndpoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        PageResponse<Funko> res =mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        // Assert
+        assertAll("findall",
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        // Verify
+        verify(funkosService, times(1)).getAllFunkos(categoria, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+    }
+
     @Test
     void getFunkoById() throws Exception {
         var myLocalEndpoint = "/funkos/v1/funkos/1";  // Verifica la URL

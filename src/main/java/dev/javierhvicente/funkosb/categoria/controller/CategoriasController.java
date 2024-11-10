@@ -4,9 +4,12 @@ import dev.javierhvicente.funkosb.categoria.dto.CategoriaDto;
 import dev.javierhvicente.funkosb.categoria.mapper.CategoriaMapper;
 import dev.javierhvicente.funkosb.categoria.models.Categoria;
 import dev.javierhvicente.funkosb.categoria.service.CategoriasService;
+import dev.javierhvicente.funkosb.utils.PageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("${api.path:/api}/${api.version:/v1}/categorias")
@@ -29,9 +33,18 @@ public class CategoriasController {
         this.categoriaMapper = categoriaMapper;
     }
     @GetMapping
-    public ResponseEntity<List<Categoria>>getAll(){
-        logger.info("Obteniendo categorias");
-        return ResponseEntity.ok(categoriasService.getCategorias());
+    public ResponseEntity<PageResponse<Categoria>>getAll(
+            @RequestParam(required = false) Optional<String> nombre,
+            @RequestParam(required = false) Optional<Boolean> isDeleted,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ){
+       logger.info("Obteniendo todas las categorias con nombre: {} y borrados: {}", nombre, isDeleted);
+       Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+       var pageable = PageRequest.of(page, size, sort);
+       return ResponseEntity.ok(PageResponse.of(categoriasService.getAllCategorias(nombre, isDeleted, pageable), sortBy, direction));
     }
 
     @GetMapping("{id}")
