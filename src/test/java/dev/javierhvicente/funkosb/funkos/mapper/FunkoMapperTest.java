@@ -18,11 +18,9 @@ public class FunkoMapperTest {
     void fromFunkoDtoShouldMapCorrectly() {
         FunkoDto dto = new FunkoDto("Funko test", "TEST", "SoyTest", "soy.png", 19.99,10, true);
         Funko funko = mapper.fromFunkoDto(dto);
-
         assertNotNull(funko);
         assertEquals(dto.name(), funko.getName());
         assertEquals(dto.price(), funko.getPrice());
-
 
     }
 
