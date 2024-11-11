@@ -65,7 +65,6 @@ public class FunkoControllerTest {
         this.funkosService = funkosService;
         this.mapperFunko = funkosMapperFunko;
         mapper.registerModule(new JavaTimeModule());
-
     }
 
     @Test
