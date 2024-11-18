@@ -36,9 +36,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 
-@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"}) // Usuario de prueba (admin, tiene de rol usaurio y admin)
-class UsersRestControllerTests {
-
+@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
+class UserControllerTests {
     private final UserRequest userRequest = UserRequest.builder()
             .nombre("test")
             .apellidos("test")
@@ -68,7 +67,7 @@ class UsersRestControllerTests {
             .email("test@test.com")
             .build();
 
-    private final String myEndpoint = "/v1/users";
+    private final String myEndpoint = "/funkos/v1/users";
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     MockMvc mockMvc;
@@ -78,7 +77,7 @@ class UsersRestControllerTests {
 
 
     @Autowired
-    public UsersRestControllerTests(UserService userService) {
+    public UserControllerTests(UserService userService) {
         this.usersService = userService;
         mapper.registerModule(new JavaTimeModule());
     }
@@ -86,7 +85,6 @@ class UsersRestControllerTests {
     @Test
     @WithAnonymousUser
     void NotAuthenticated() throws Exception {
-        // Localpoint
         MockHttpServletResponse response = mockMvc.perform(
                         get(myEndpoint)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -97,33 +95,28 @@ class UsersRestControllerTests {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findAll() throws Exception {
         var list = List.of(userResponse);
-        Page<UserResponse> page = new PageImpl<>(list);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
-
-        // Arrange
+        Page<UserResponse> page = new PageImpl<>(list);
         when(usersService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
-        // Consulto el endpoint
         MockHttpServletResponse response = mockMvc.perform(
                         get(myEndpoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        // System.out.println(response.getContentAsString());
-        PageResponse<UserResponse> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
-        });
+        PageResponse<UserResponse> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {});
 
-        // Assert
         assertAll("findallUsers",
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(1, res.content().size())
         );
 
-        // Verify
         verify(usersService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
+
 
     @Test
     void findById() throws Exception {

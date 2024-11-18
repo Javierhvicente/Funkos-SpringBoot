@@ -1,7 +1,7 @@
 package dev.javierhvicente.funkosb.auth.dto;
 
 
-import dev.joseluisgs.tiendaapispringboot.rest.users.models.Role;
+import dev.javierhvicente.funkosb.Users.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
