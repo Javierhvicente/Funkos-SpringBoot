@@ -126,11 +126,9 @@ public class PedidosServiceImpl implements PedidosService {
         }
         pedido.getLineasPedido().forEach(lineaPedido -> {
             var funko = funkosService.getFunkoById(lineaPedido.getIdProducto());
-            // Si existe, comprobamos si hay stock
             if (funko.getStock() < lineaPedido.getCantidad()) {
                 throw new ProductoNotStock(lineaPedido.getIdProducto());
             }
-            // Podemos comprobar más cosas, como si el precio es el mismo, etc...
             if (!funko.getPrice().equals(lineaPedido.getPrecioProducto())) {
                 throw new ProductoBadPrice(lineaPedido.getIdProducto());
             }

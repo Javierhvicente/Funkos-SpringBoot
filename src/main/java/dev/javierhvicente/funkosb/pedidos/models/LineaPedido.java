@@ -18,11 +18,9 @@ public class LineaPedido {
     @Min(value = 0, message = "El precio del producto no puede ser negativo")
     @Builder.Default
     private Double precioProducto = 0.0;
-    // No hace falta pasarlo, lo calculamos, pero si lo pasamos lo usamos
     @Builder.Default
     private Double total = 0.0;
 
-    // Campos calculados
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
         this.total = this.cantidad * this.precioProducto;

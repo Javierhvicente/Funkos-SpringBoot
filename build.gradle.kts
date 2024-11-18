@@ -36,12 +36,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+
+    implementation("org.springframework.boot:spring-boot-starter-security")
     //H2
     implementation("com.h2database:h2")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+
+    // Para manejar los JWT tokens
+    // JWT (Json Web Token)
+    implementation("com.auth0:java-jwt:4.4.0")
 
     // Para usar con jackson el controlador las fechas: LocalDate, LocalDateTime, etc
     // Lo podemos usar en el test o en el controlador, si hiciese falta, por eso está aquí
@@ -51,6 +57,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    // Dependencias para Test
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    // Test Spring Security
+    testImplementation("org.springframework.security:spring-security-test")
 
 }
 

@@ -44,10 +44,7 @@ public class StorageController {
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // Aunque no es obligatorio, podemos indicar que se consume multipart/form-data
-    // Para ficheros usamos, Resuqest part, porque lo tenemos dividido en partes
     public ResponseEntity<Map<String, Object>> uploadFile(@RequestPart("file") MultipartFile file) {
-        // Almacenamos el fichero y obtenemos su URL
         String urlImagen = null;
 
         if (!file.isEmpty()) {

@@ -19,11 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-// Nombre de la colección en MongoDB
 @Document("pedidos")
-// Para que sepa con qué clase recuperarlo al traerlo con MongoDB y aplicar polimorfismo
 public class Pedido {
-    // Id de mongo
     @Id
     @Builder.Default
     private ObjectId id = new ObjectId();
@@ -33,19 +30,14 @@ public class Pedido {
     private Cliente cliente;
     @NotNull(message = "El pedido debe tener al menos una línea de pedido")
     private List<LineaPedido> lineasPedido;
-    // No hace falta pasarlo, lo calculamos, pero si lo pasamos lo usamos
     @Builder.Default()
     private Integer totalItems = 0;
-    // No hace falta pasarlo, lo calculamos, pero si lo pasamos lo usamos
     @Builder.Default()
     private Double total = 0.0;
-    // No hace falta pasarlo, lo calculamos, pero si lo pasamos lo usamos
     @Builder.Default()
     private LocalDateTime createdAt = LocalDateTime.now();
     @Builder.Default()
-    // No hace falta pasarlo, lo calculamos, pero si lo pasamos lo usamos
     private LocalDateTime updatedAt = LocalDateTime.now();
-    // No hace falta pasarlo, lo calculamos, pero si lo pasamos lo usamos
     @Builder.Default()
     private Boolean isDeleted = false;
 
@@ -54,7 +46,6 @@ public class Pedido {
         return id.toHexString();
     }
 
-    // Podemos añadir los set para que calculen los campos calculados, por ejemplo con las líneas de pedido
     public void setLineasPedido(List<LineaPedido> lineasPedido) {
         this.lineasPedido = lineasPedido;
         this.totalItems = lineasPedido != null ? lineasPedido.size() : 0;
