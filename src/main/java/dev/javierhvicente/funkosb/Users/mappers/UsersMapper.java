@@ -1,9 +1,9 @@
-package Users.mappers;
+package dev.javierhvicente.funkosb.Users.mappers;
 
-import Users.dto.UserInfoResponse;
-import Users.dto.UserRequest;
-import Users.dto.UserResponse;
-import Users.models.User;
+import dev.javierhvicente.funkosb.Users.dto.UserInfoResponse;
+import dev.javierhvicente.funkosb.Users.dto.UserRequest;
+import dev.javierhvicente.funkosb.Users.dto.UserResponse;
+import dev.javierhvicente.funkosb.Users.models.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

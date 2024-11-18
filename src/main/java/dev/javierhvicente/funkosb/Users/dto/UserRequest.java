@@ -1,6 +1,6 @@
-package Users.dto;
+package dev.javierhvicente.funkosb.Users.dto;
 
-import Users.models.Role;
+import dev.javierhvicente.funkosb.Users.models.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

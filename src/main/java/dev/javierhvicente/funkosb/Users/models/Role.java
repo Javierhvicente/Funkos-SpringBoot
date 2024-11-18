@@ -1,4 +1,4 @@
-package Users.models;
+package dev.javierhvicente.funkosb.Users.models;
 
 /**
  * Roles de usuario

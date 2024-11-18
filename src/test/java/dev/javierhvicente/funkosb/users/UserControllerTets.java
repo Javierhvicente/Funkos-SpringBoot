@@ -1,11 +1,11 @@
 package dev.javierhvicente.funkosb.users;
 
-import Users.dto.UserInfoResponse;
-import Users.dto.UserRequest;
-import Users.dto.UserResponse;
-import Users.exceptions.UserNotFound;
-import Users.models.User;
-import Users.service.UserService;
+import dev.javierhvicente.funkosb.Users.dto.UserInfoResponse;
+import dev.javierhvicente.funkosb.Users.dto.UserRequest;
+import dev.javierhvicente.funkosb.Users.dto.UserResponse;
+import dev.javierhvicente.funkosb.Users.exceptions.UserNotFound;
+import dev.javierhvicente.funkosb.Users.models.User;
+import dev.javierhvicente.funkosb.Users.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

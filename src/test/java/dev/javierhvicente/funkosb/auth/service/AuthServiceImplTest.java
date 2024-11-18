@@ -1,6 +1,6 @@
 package dev.javierhvicente.funkosb.auth.service;
 
-import Users.models.User;
+import dev.javierhvicente.funkosb.Users.models.User;
 import dev.javierhvicente.funkosb.auth.dto.JwtAuthResponse;
 import dev.javierhvicente.funkosb.auth.dto.UserSignInRequest;
 import dev.javierhvicente.funkosb.auth.dto.UserSignUpRequest;

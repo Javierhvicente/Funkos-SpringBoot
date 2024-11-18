@@ -1,7 +1,7 @@
 package dev.javierhvicente.funkosb.auth.repositories;
 
 
-import Users.models.User;
+import dev.javierhvicente.funkosb.Users.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

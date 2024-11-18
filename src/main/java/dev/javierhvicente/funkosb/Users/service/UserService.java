@@ -1,8 +1,8 @@
-package Users.service;
+package dev.javierhvicente.funkosb.Users.service;
 
-import Users.dto.UserInfoResponse;
-import Users.dto.UserRequest;
-import Users.dto.UserResponse;
+import dev.javierhvicente.funkosb.Users.dto.UserInfoResponse;
+import dev.javierhvicente.funkosb.Users.dto.UserRequest;
+import dev.javierhvicente.funkosb.Users.dto.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

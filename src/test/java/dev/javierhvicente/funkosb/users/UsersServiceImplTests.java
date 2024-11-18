@@ -1,14 +1,14 @@
 package dev.javierhvicente.funkosb.users;
 
-import Users.dto.UserInfoResponse;
-import Users.dto.UserRequest;
-import Users.dto.UserResponse;
-import Users.exceptions.UserNameOrEmailExists;
-import Users.exceptions.UserNotFound;
-import Users.mappers.UsersMapper;
-import Users.models.User;
-import Users.repositories.UsersRepository;
-import Users.service.UserServiceImpl;
+import dev.javierhvicente.funkosb.Users.dto.UserInfoResponse;
+import dev.javierhvicente.funkosb.Users.dto.UserRequest;
+import dev.javierhvicente.funkosb.Users.dto.UserResponse;
+import dev.javierhvicente.funkosb.Users.exceptions.UserNameOrEmailExists;
+import dev.javierhvicente.funkosb.Users.exceptions.UserNotFound;
+import dev.javierhvicente.funkosb.Users.mappers.UsersMapper;
+import dev.javierhvicente.funkosb.Users.models.User;
+import dev.javierhvicente.funkosb.Users.repositories.UsersRepository;
+import dev.javierhvicente.funkosb.Users.service.UserServiceImpl;
 import dev.javierhvicente.funkosb.pedidos.repository.PedidosRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

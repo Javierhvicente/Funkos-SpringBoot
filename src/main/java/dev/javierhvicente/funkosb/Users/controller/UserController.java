@@ -1,10 +1,10 @@
-package Users.controller;
+package dev.javierhvicente.funkosb.Users.controller;
 
-import Users.dto.UserInfoResponse;
-import Users.dto.UserRequest;
-import Users.dto.UserResponse;
-import Users.models.User;
-import Users.service.UserService;
+import dev.javierhvicente.funkosb.Users.dto.UserInfoResponse;
+import dev.javierhvicente.funkosb.Users.dto.UserRequest;
+import dev.javierhvicente.funkosb.Users.dto.UserResponse;
+import dev.javierhvicente.funkosb.Users.models.User;
+import dev.javierhvicente.funkosb.Users.service.UserService;
 import dev.javierhvicente.funkosb.pedidos.models.Pedido;
 import dev.javierhvicente.funkosb.pedidos.service.PedidosService;
 import dev.javierhvicente.funkosb.utils.PageResponse;

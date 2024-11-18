@@ -1,6 +1,6 @@
 package dev.javierhvicente.funkosb.auth.service.user;
 
-import Users.exceptions.UserNotFound;
+import dev.javierhvicente.funkosb.Users.exceptions.UserNotFound;
 import dev.javierhvicente.funkosb.auth.repositories.AuthUsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
