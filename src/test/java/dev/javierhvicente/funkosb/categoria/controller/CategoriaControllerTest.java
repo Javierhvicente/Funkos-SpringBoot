@@ -26,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -176,6 +177,7 @@ public class CategoriaControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createCategoria() throws Exception {
         var categoriaDto = new CategoriaDto("TEST", true);
         when(mapperCategorias.fromCategoriaDto(categoriaDto)).thenReturn(categoria);
@@ -194,6 +196,7 @@ public class CategoriaControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createCategoriaBadRequestEnabled() throws Exception {
         var categoriaDto = new CategoriaDto("TEST", null);
         when(mapperCategorias.fromCategoriaDto(categoriaDto)).thenReturn(categoria);
@@ -209,6 +212,7 @@ public class CategoriaControllerTest {
         );
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createCategoriaBadRequestNoTipo() throws Exception {
         var categoriaDto = new CategoriaDto("", null);
         when(mapperCategorias.fromCategoriaDto(categoriaDto)).thenReturn(categoria);
@@ -225,6 +229,7 @@ public class CategoriaControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateCategoria() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         var categoriaDtoUpdated = new CategoriaDto("updated", true);
@@ -245,6 +250,7 @@ public class CategoriaControllerTest {
         );
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateCategoriaNotFound() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         var categoriaDtoUpdated = new CategoriaDto("updated", true);
@@ -262,6 +268,7 @@ public class CategoriaControllerTest {
         );
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateCategoriaDtoBadRequestEnabled() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         var categoriaUpdted = new CategoriaDto("updated", null);
@@ -275,6 +282,7 @@ public class CategoriaControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateCategoriaDtoBadRequestTipo() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         var categoriaUpdted = new CategoriaDto("", true);
@@ -288,6 +296,7 @@ public class CategoriaControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteCategoria() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         Categoria categoriaDelete = new Categoria(1L, "TEST", null, LocalDateTime.now(), LocalDateTime.now(), true);
@@ -303,6 +312,7 @@ public class CategoriaControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteCategoriaNotFound() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         when(categoriasService.delete(anyLong())).thenThrow(new CategoriaException.CategoriaNotFound(categoria.getId()));

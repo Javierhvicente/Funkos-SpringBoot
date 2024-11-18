@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ExtendWith(MockitoExtension.class)
 public class PedidosControllerTest{
     private final String myEndPoint = "/funkos/v1/pedidos";
+    @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
     private final Pedido pedido1 = Pedido.builder()
             .id(new ObjectId("5f9f1a3b9d6b6d2e3c1d6f1a"))
@@ -74,6 +76,7 @@ public class PedidosControllerTest{
         mapper.registerModule(new JavaTimeModule()); // Necesario para que funcione LocalDateTime
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getAllPedidos() throws Exception {
         var pedidosList = List.of(pedido1);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -99,6 +102,7 @@ public class PedidosControllerTest{
         verify(pedidosService, times(1)).findAll(any(Pageable.class));
     }
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void getPedidoById() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
         when(pedidosService.findById(any(ObjectId.class))).thenReturn(pedido1);
@@ -118,6 +122,7 @@ public class PedidosControllerTest{
         verify(pedidosService, times(1)).findById(any(ObjectId.class));
     }
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void getPedidoByIdNoFound() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
 
@@ -137,6 +142,7 @@ public class PedidosControllerTest{
         verify(pedidosService, times(1)).findById(any(ObjectId.class));
     }
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void getPedidosByUsuarioId() throws Exception {
         var myLocalEndpoint = myEndPoint + "/usuario/1";
         var pedidosList = List.of(pedido1);
@@ -161,6 +167,7 @@ public class PedidosControllerTest{
         verify(pedidosService, times(1)).findByIdUsuario(anyLong(), any(Pageable.class));
     }
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void createPedido() throws Exception {
         when(pedidosService.save(any(Pedido.class))).thenReturn(pedido1);
 
@@ -181,6 +188,7 @@ public class PedidosControllerTest{
         verify(pedidosService, times(1)).save(any(Pedido.class));
     }
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void createPedidoNoItemsBadRequest() throws Exception {
         when(pedidosService.save(any(Pedido.class))).thenThrow(new PedidoNotItems("5f9f1a3b9d6b6d2e3c1d6f1a"));
 
@@ -198,6 +206,7 @@ public class PedidosControllerTest{
         verify(pedidosService).save(any(Pedido.class));
     }
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void createPedidoProductoBadPriceBadRequest() throws Exception {
         when(pedidosService.save(any(Pedido.class))).thenThrow(new ProductoBadPrice(1L));
 
@@ -214,6 +223,7 @@ public class PedidosControllerTest{
         verify(pedidosService).save(any(Pedido.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getPedidosProductoNotFoundBadRequest() throws Exception {
         when(pedidosService.save(any(Pedido.class))).thenThrow(new ProductoNotFound(1L));
 
@@ -229,6 +239,7 @@ public class PedidosControllerTest{
         verify(pedidosService).save(any(Pedido.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateProduct() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
         when(pedidosService.update(any(ObjectId.class), any(Pedido.class))).thenReturn(pedido1);
@@ -250,6 +261,7 @@ public class PedidosControllerTest{
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updatePedidoNoFound() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
 
@@ -269,6 +281,7 @@ public class PedidosControllerTest{
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updatePedidoNoItemsBadRequest() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
 
@@ -288,6 +301,7 @@ public class PedidosControllerTest{
         verify(pedidosService, times(1)).update(any(ObjectId.class), any(Pedido.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updatePedidoProductoBadPriceBadRequest() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
 
@@ -308,6 +322,7 @@ public class PedidosControllerTest{
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deletePedido() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
         doNothing().when(pedidosService).delete(any(ObjectId.class));
@@ -324,6 +339,7 @@ public class PedidosControllerTest{
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deletePedidoNoFound() throws Exception {
         var myLocalEndpoint = myEndPoint + "/5f9f1a3b9d6b6d2e3c1d6f1a";
 

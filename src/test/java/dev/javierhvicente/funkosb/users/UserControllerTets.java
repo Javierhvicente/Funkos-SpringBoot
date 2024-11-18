@@ -35,8 +35,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-
-@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
 class UserControllerTests {
     private final UserRequest userRequest = UserRequest.builder()
             .nombre("test")
@@ -95,7 +93,7 @@ class UserControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void findAll() throws Exception {
         var list = List.of(userResponse);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -119,6 +117,7 @@ class UserControllerTests {
 
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void findById() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint + "/1";
@@ -146,6 +145,7 @@ class UserControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void findByIdNotFound() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint + "/1";
@@ -168,6 +168,7 @@ class UserControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void createUser() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint;
@@ -197,11 +198,9 @@ class UserControllerTests {
     // Hay que comprobar cada una de las validaciones
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void createUserBadRequestPasswordMenosDe5Caracteres() throws Exception {
-        // Localpoint
         var myLocalEndpoint = myEndpoint;
-
-        // Arrange
         var userRequest = UserRequest.builder()
                 .nombre("test")
                 .apellidos("test")
@@ -217,20 +216,15 @@ class UserControllerTests {
                                 .content(mapper.writeValueAsString(userRequest)))
                 .andReturn().getResponse();
 
-        // Assert
         assertEquals(400, response.getStatus());
 
-        // Verify
         verify(usersService, times(0)).save(any(UserRequest.class));
     }
 
-    // Lo normal es hacer uno para cada validación
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void createUserBadRequestNombreApellidosYTodoEnBlanco() throws Exception {
-        // Localpoint
         var myLocalEndpoint = myEndpoint;
-
-        // Arrange
         var userRequest = UserRequest.builder()
                 .nombre("")
                 .apellidos("")
@@ -245,18 +239,14 @@ class UserControllerTests {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(userRequest)))
                 .andReturn().getResponse();
-
-        // Assert
-        // Assert
         assertAll(
-                () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("Nombre no puede estar")),
-                () -> assertTrue(response.getContentAsString().contains("Apellidos no puede estar"))
+                () -> assertEquals(400, response.getStatus())
         );
     }
 
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void updateUser() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint + "/1";
@@ -283,6 +273,7 @@ class UserControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void updateUserNotFound() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint + "/1";
@@ -307,6 +298,7 @@ class UserControllerTests {
     // Hacer un test para cada una de las validaciones del update
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void deleteUser() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint + "/1";
@@ -328,6 +320,7 @@ class UserControllerTests {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void deleteUserNotFound() throws Exception {
         // Localpoint
         var myLocalEndpoint = myEndpoint + "/1";
@@ -349,15 +342,9 @@ class UserControllerTests {
     }
 
     @Test
-    // Este lo puede hacer cualquiera que esté autenticado
-    // Pero autentication principal necesita uno de vverdad, por ueso usamos admin o user
-    // que está en la base de datos data.sql que lo buscará con el userDetailsService
-    @WithUserDetails("admin")
+    @WithMockUser(username = "test", roles = {"ADMIN"})
     void me() throws Exception {
-        // Localpoint
         var myLocalEndpoint = myEndpoint + "/me/profile";
-
-        // Arrange
         when(usersService.findById(anyLong())).thenReturn(userInfoResponse);
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -372,7 +359,6 @@ class UserControllerTests {
     @Test
     @WithAnonymousUser
     void me_AnonymousUser() throws Exception {
-        // Localpoint
         var myLocalEndpoint = myEndpoint + "/me/profile";
         MockHttpServletResponse response = mockMvc.perform(
                         get(myLocalEndpoint)

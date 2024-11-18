@@ -34,7 +34,6 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @RequestMapping("${api.path:/api}/${api.version:/v1}/users")
-@PreAuthorize("hasRole('USER')")
 public class UserController {
     private final UserService usersService;
     private final PedidosService pedidosService;
@@ -92,7 +91,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/me/profile")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserInfoResponse> me(@AuthenticationPrincipal User user) {
         log.info("Obteniendo usuario");
         return ResponseEntity.ok(usersService.findById(user.getId()));

@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
-    private final String myEndpoint = "funkos/v1/auth";
+    private final String myEndpoint = "/funkos/v1/auth";
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     MockMvc mockMvc;

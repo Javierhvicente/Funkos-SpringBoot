@@ -26,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -643,6 +644,7 @@ public class FunkoControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunko() throws Exception {
         var funkoDto = new FunkoDto(
                 "Funko test",
@@ -674,6 +676,7 @@ public class FunkoControllerTest {
 
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunkoBadRequestPriceBiggerThanLimit() throws Exception {
         var funkoNew = new FunkoDto("Funko test", "TEST", "SoyTest", "soy.png", 199.99, 10,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
@@ -689,6 +692,7 @@ public class FunkoControllerTest {
         verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunkoBadRequestNoName() throws Exception {
         var funkoNew = new FunkoDto("", "TEST", "SoyTest", "soy.png", 19.99, 10,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
@@ -704,6 +708,7 @@ public class FunkoControllerTest {
         verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunkoBadRequestNoCategoria() throws Exception {
         var funkoNew = new FunkoDto("FunkoTest", "", "SoyTest", "soy.png", 19.99, 10,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
@@ -719,6 +724,7 @@ public class FunkoControllerTest {
         verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunkoBadRequestNoDescripcion() throws Exception {
         var funkoNew = new FunkoDto("FunkoTest", "TEST", "", "soy.png", 19.99, 10,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
@@ -734,6 +740,7 @@ public class FunkoControllerTest {
         verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunkoBadRequestUnderPriceLimit() throws Exception {
         var funkoNew = new FunkoDto("FunkoTest", "TEST", "SoyTest", "soy.png", 1.99, 10,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
@@ -749,6 +756,7 @@ public class FunkoControllerTest {
         verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createFunkoBadRequestStockNegative() throws Exception {
         var funkoNew = new FunkoDto("", "TEST", "SoyTest", "soy.png", 19.99, -1,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
@@ -764,6 +772,7 @@ public class FunkoControllerTest {
         verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunko() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 29.99, 10,true);
@@ -788,6 +797,7 @@ public class FunkoControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoNotFound() throws Exception {
         var myLocalEndpoint = myEndpoint + "/99999";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 29.99, 10,true);
@@ -809,6 +819,7 @@ public class FunkoControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoBadRequestPriceBiggerThanLimit() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 229.99, 10,true);
@@ -822,6 +833,7 @@ public class FunkoControllerTest {
         assertEquals(400, response.getStatus());
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoBadRequestPriceUnderMinLimit() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 1.99, 10,true);
@@ -835,6 +847,7 @@ public class FunkoControllerTest {
         assertEquals(400, response.getStatus());
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoBadRequestNoName() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("", "TEST", "SoyTestUpdated", "soy.png", 29.99, 10,true);
@@ -848,6 +861,7 @@ public class FunkoControllerTest {
         assertEquals(400, response.getStatus());
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoBadRequestNoCategoria() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "", "SoyTestUpdated", "soy.png", 29.99, 10,true);
@@ -861,6 +875,7 @@ public class FunkoControllerTest {
         assertEquals(400, response.getStatus());
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoBadRequestNoDescripcion() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "", "soy.png", 29.99, 10,true);
@@ -874,6 +889,7 @@ public class FunkoControllerTest {
         assertEquals(400, response.getStatus());
     }
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateFunkoBadRequestUnderStock() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 229.99, -1,true);
@@ -888,6 +904,7 @@ public class FunkoControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteFunko() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
         when(funkosService.deleteFunko(anyLong())).thenReturn(funko);
@@ -903,6 +920,7 @@ public class FunkoControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteFunkoNotFound() throws Exception {
         var myLocalEndpoint = myEndpoint + "/99999";
         when(funkosService.deleteFunko(anyLong())).thenThrow(new FunkosExceptions.FunkoNotFound(anyLong()));
