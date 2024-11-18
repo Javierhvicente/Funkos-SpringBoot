@@ -194,8 +194,23 @@ public class CategoriaControllerTest {
     }
 
     @Test
-    void createCategoriaBadRequest() throws Exception {
+    void createCategoriaBadRequestEnabled() throws Exception {
         var categoriaDto = new CategoriaDto("TEST", null);
+        when(mapperCategorias.fromCategoriaDto(categoriaDto)).thenReturn(categoria);
+        when(categoriasService.create(categoria)).thenReturn(categoria);
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(categoriaDto))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(400, response.getStatus())
+        );
+    }
+    @Test
+    void createCategoriaBadRequestNoTipo() throws Exception {
+        var categoriaDto = new CategoriaDto("", null);
         when(mapperCategorias.fromCategoriaDto(categoriaDto)).thenReturn(categoria);
         when(categoriasService.create(categoria)).thenReturn(categoria);
         MockHttpServletResponse response = mockMvc.perform(

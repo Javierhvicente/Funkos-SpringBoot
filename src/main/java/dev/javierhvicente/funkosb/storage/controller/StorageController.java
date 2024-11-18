@@ -25,7 +25,7 @@ public class StorageController {
         this.storageService = storageService;
     }
 
-    @GetMapping(value = "{filename:.+ }",  produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping(value = "{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serverFile(@PathVariable String filename, HttpServletRequest request){
         Resource file = storageService.loadAsResource(filename);

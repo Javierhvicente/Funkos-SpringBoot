@@ -65,7 +65,6 @@ public class FunkoControllerTest {
         this.funkosService = funkosService;
         this.mapperFunko = funkosMapperFunko;
         mapper.registerModule(new JavaTimeModule());
-
     }
 
     @Test
@@ -675,21 +674,95 @@ public class FunkoControllerTest {
 
 
     @Test
-    void createFunkoBadRequest() throws Exception {
+    void createFunkoBadRequestPriceBiggerThanLimit() throws Exception {
         var funkoNew = new FunkoDto("Funko test", "TEST", "SoyTest", "soy.png", 199.99, 10,true);
         when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
         MockHttpServletResponse response = mockMvc.perform(
                         post(myEndpoint)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                // Le paso el body
                                 .content(funkoDto.write(funkoNew).getJson())
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         assertAll(
                 () -> assertEquals(400, response.getStatus())
         );
+        verify(funkosService, times(0)).createFunko(any(Funko.class));
     }
-
+    @Test
+    void createFunkoBadRequestNoName() throws Exception {
+        var funkoNew = new FunkoDto("", "TEST", "SoyTest", "soy.png", 19.99, 10,true);
+        when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoNew).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(400, response.getStatus())
+        );
+        verify(funkosService, times(0)).createFunko(any(Funko.class));
+    }
+    @Test
+    void createFunkoBadRequestNoCategoria() throws Exception {
+        var funkoNew = new FunkoDto("FunkoTest", "", "SoyTest", "soy.png", 19.99, 10,true);
+        when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoNew).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(400, response.getStatus())
+        );
+        verify(funkosService, times(0)).createFunko(any(Funko.class));
+    }
+    @Test
+    void createFunkoBadRequestNoDescripcion() throws Exception {
+        var funkoNew = new FunkoDto("FunkoTest", "TEST", "", "soy.png", 19.99, 10,true);
+        when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoNew).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(400, response.getStatus())
+        );
+        verify(funkosService, times(0)).createFunko(any(Funko.class));
+    }
+    @Test
+    void createFunkoBadRequestUnderPriceLimit() throws Exception {
+        var funkoNew = new FunkoDto("FunkoTest", "TEST", "SoyTest", "soy.png", 1.99, 10,true);
+        when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoNew).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(400, response.getStatus())
+        );
+        verify(funkosService, times(0)).createFunko(any(Funko.class));
+    }
+    @Test
+    void createFunkoBadRequestStockNegative() throws Exception {
+        var funkoNew = new FunkoDto("", "TEST", "SoyTest", "soy.png", 19.99, -1,true);
+        when(funkosService.createFunko(any(Funko.class))).thenReturn(funko);
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoNew).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(400, response.getStatus())
+        );
+        verify(funkosService, times(0)).createFunko(any(Funko.class));
+    }
     @Test
     void updateFunko() throws Exception {
         var myLocalEndpoint = myEndpoint + "/1";
@@ -736,9 +809,74 @@ public class FunkoControllerTest {
     }
 
     @Test
-    void updateFunkoBadRequest() throws Exception{
+    void updateFunkoBadRequestPriceBiggerThanLimit() throws Exception{
         var myLocalEndpoint = myEndpoint + "/1";
         var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 229.99, 10,true);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        put(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoUpdated).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertEquals(400, response.getStatus());
+    }
+    @Test
+    void updateFunkoBadRequestPriceUnderMinLimit() throws Exception{
+        var myLocalEndpoint = myEndpoint + "/1";
+        var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 1.99, 10,true);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        put(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoUpdated).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertEquals(400, response.getStatus());
+    }
+    @Test
+    void updateFunkoBadRequestNoName() throws Exception{
+        var myLocalEndpoint = myEndpoint + "/1";
+        var funkoUpdated = new FunkoDto("", "TEST", "SoyTestUpdated", "soy.png", 29.99, 10,true);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        put(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoUpdated).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertEquals(400, response.getStatus());
+    }
+    @Test
+    void updateFunkoBadRequestNoCategoria() throws Exception{
+        var myLocalEndpoint = myEndpoint + "/1";
+        var funkoUpdated = new FunkoDto("Funko test updated", "", "SoyTestUpdated", "soy.png", 29.99, 10,true);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        put(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoUpdated).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertEquals(400, response.getStatus());
+    }
+    @Test
+    void updateFunkoBadRequestNoDescripcion() throws Exception{
+        var myLocalEndpoint = myEndpoint + "/1";
+        var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "", "soy.png", 29.99, 10,true);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        put(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(funkoDto.write(funkoUpdated).getJson())
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertEquals(400, response.getStatus());
+    }
+    @Test
+    void updateFunkoBadRequestUnderStock() throws Exception{
+        var myLocalEndpoint = myEndpoint + "/1";
+        var funkoUpdated = new FunkoDto("Funko test updated", "TEST", "SoyTestUpdated", "soy.png", 229.99, -1,true);
 
         MockHttpServletResponse response = mockMvc.perform(
                         put(myLocalEndpoint)
